@@ -1,0 +1,66 @@
+---
+# tasks file for setup_tailscale
+- name: Install Tailscale if distro = debian
+  block:
+
+    - name: Set Debian codename fact
+      set_fact:
+        debian_codename: "{{ ansible_distribution_release }}"
+
+
+    - name: Add Tailscale's package signing key
+      ansible.builtin.apt_key:
+        url: https://pkgs.tailscale.com/stable/debian/{{ debian_codename }}.noarmor.gpg
+        keyring: /usr/share/keyrings/tailscale-archive-keyring.gpg
+        state: present
+
+
+
+    - name: Add Tailscale repository
+      ansible.builtin.apt_repository:
+        repo: deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian {{ debian_codename }} main
+        filename: tailscale
+        state: present
+        update_cache: yes
+
+    - name: Update apt cache (apt-get update) 
+      ansible.builtin.apt:
+        update_cache: yes
+
+
+    - name: Install Tailscale
+      ansible.builtin.apt:
+        name: tailscale
+        state: present
+  when: ansible_distribution == "Debian"
+
+- name: Install tailscale with install script if os is not debian
+  block:
+    - name: Run tailscale install script
+      ansible.builtin.shell:
+        cmd: curl -fsSL https://tailscale.com/install.sh | sh
+
+  when: ansible_distribution != "Debian"
+
+- name: Ensure tailscale is started and enabled at boot
+  service:
+    name: tailscaled
+    state: started
+    enabled: true
+
+- name: Run tailscale up
+  shell: "tailscale up --reset --authkey={{ tailscale_pre_auth_key }}"
+
+
+- name: Execute the command
+  command: tailscale ip
+  register: tailscale_ipv4  # This registers the command output to ip_output variable
+
+
+- name: Extract the IPv4 address
+  set_fact:
+    tailscale_ipv4: "{{ tailscale_ipv4.stdout_lines | select('match', '^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$') | first }}"
+    
+- name: Print the IPv4 address
+  debug:
+    var: tailscale_ipv4
