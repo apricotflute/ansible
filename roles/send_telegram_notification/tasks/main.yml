@@ -1,0 +1,13 @@
+---
+# tasks file for send_telegram_notification
+
+  - name: send_telegram_notification
+    uri:
+      url: "https://api.telegram.org/bot{{ telegram_token }}/sendMessage"
+      method: POST
+      body_format: json
+      body:
+        chat_id: "{{ chat_id }}"
+        text: " {{ telegram_notification_text }} "
+      status_code: 200
+    run_once: true
