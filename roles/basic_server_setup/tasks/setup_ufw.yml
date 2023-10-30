@@ -1,0 +1,20 @@
+---
+- name: Enable UFW
+  shell: echo "y" | ufw enable
+  register: ufw_enable_result
+  changed_when: "'Firewall is active and enabled' not in ufw_enable_result.stdout"
+  notify: Reload UFW
+
+- name: Allow specified services through UFW
+  ufw:
+    rule: allow
+    name: "{{ item }}"
+  with_items: "{{ allowed_services }}"
+  notify: Reload UFW
+
+- name: Deny all other incoming traffic
+  ufw:
+    direction: incoming
+    policy: deny
+  notify: Reload UFW
+

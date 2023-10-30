@@ -1,0 +1,23 @@
+---
+- name: copy sshd_config to sshd_config.back
+  shell:
+    cmd: cp /etc/ssh/ssh_config /etc/ssh/ssh_config.back
+    
+- name: Update sshd_config for secure settings
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s
+
+  notify: restart sshd
+
+- name: Set up SSH banner
+  block:
+    - template:
+        src: ./templates/ssh_banner.j2
+        dest: /etc/ssh/banner.txt
+        mode: '0644'
+  when: ssh_enable_banner == "yes"

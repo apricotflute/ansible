@@ -1,2 +1,24 @@
 ---
 # tasks file for basic_server_setup
+
+#Mashine config
+- include: ./tasks/ntp_time_sync.yml
+- include: ./tasks/setup_ufw.yml
+- include: ./set_hostname.yml
+
+
+
+
+#Packages setup
+- include: ./update_upgrade.yml
+- include: ./install_basic_packages.yml
+- include: ./tasks/configure_unattended_upgrades.yml
+
+
+
+#User config
+- include: ./create_user.yml
+- include: ./setup_sudo.yml
+- include: ./add_ssh_key.yml
+- include: ./configure_ssh.yml
+

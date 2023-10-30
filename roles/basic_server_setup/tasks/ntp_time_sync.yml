@@ -1,0 +1,13 @@
+---
+- name: Install systemd-timesyncd
+  apt:
+    name: systemd-timesyncd
+    state: present
+  become: true
+
+- name: Enable and start systemd-timesyncd
+  systemd:
+    name: systemd-timesyncd
+    enabled: true
+    state: started
+  become: true

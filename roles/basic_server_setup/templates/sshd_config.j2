@@ -1,0 +1,52 @@
+# Include additional configurations
+Include /etc/ssh/sshd_config.d/*.conf
+
+Protocol 2
+Port {{ ssh_port }}
+ListenAddress {{ ssh_listen_address }}
+PermitRootLogin {{ ssh_permit_root_login }}
+MaxAuthTries {{ ssh_max_auth_tries }}
+PubkeyAuthentication {{ ssh_pubkey_authentication }}
+PasswordAuthentication {{ ssh_password_authentication }}
+PermitEmptyPasswords no
+KbdInteractiveAuthentication no
+UsePAM yes
+X11Forwarding {{ ssh_x11_forwarding }}
+PrintMotd no
+ClientAliveInterval {{ ssh_client_alive_interval }}
+ClientAliveCountMax {{ ssh_client_alive_count_max }}
+
+{% if ssh_accept_env == 'yes' %}
+AcceptEnv LANG LC_*
+{% endif %}
+
+{% if ssh_enable_sftp == 'yes' %}
+Subsystem sftp /usr/lib/openssh/sftp-server
+{% endif %}
+
+{% if ssh_allow_users %}
+AllowUsers {{ ssh_allow_users  }}
+{% endif %}
+
+
+{% if ssh_enable_banner == 'yes' %}
+Banner {{ ssh_banner_path }}
+{% endif %}
+
+PermitEmptyPasswords no
+
+# Adjust for debugging purposes
+# LogLevel INFO
+
+TCPKeepAlive yes
+Compression yes
+Ciphers aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512,hmac-sha2-256
+LoginGraceTime 1m
+PermitUserEnvironment no
+ChallengeResponseAuthentication no
+
+# Specify host key files (adjust paths as needed)
+#HostKey /etc/ssh/ssh_host_rsa_key
+#HostKey /etc/ssh/ssh_host_ecdsa_key
+HostKey /etc/ssh/ssh_host_ed25519_key

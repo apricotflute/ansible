@@ -1,0 +1,40 @@
+---
+- name: configure unattended upgrades for debian systems
+  block:
+    - name: Install unattended-upgrades package
+      apt:
+        name: unattended-upgrades
+        state: present
+
+    - name: Setup unattended upgrades 50unattended-upgrades
+      template:
+        src: unattended-upgrades.j2
+        dest: /etc/apt/apt.conf.d/50unattended-upgrades
+        owner: root
+        group: root
+        mode: '0644'
+      notify: restart unattended-upgrades
+
+    - name: Setup automatic upgrades 20auto-upgrades
+      template:
+        src: auto-upgrades.j2
+        dest: /etc/apt/apt.conf.d/20auto-upgrades
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure logging directory exists
+      file:
+        path: "{{ unattended_logfile | dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Ensure unattended-upgrades service is started and enabled at reboot
+      systemd:
+        name: unattended-upgrades
+        state: started
+        enabled: yes
+
+  when: ansible_facts['os_family'] == 'Debian'

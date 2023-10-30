@@ -1,2 +1,24 @@
 ---
 # handlers file for basic_server_setup
+- name: restart sshd
+  service:
+    name: sshd
+    state: restarted
+
+# Handlers for UFW setup
+- name: Reload UFW
+  command: ufw reload
+
+
+
+# handlers  for unattended_upgrades
+- name: restart unattended-upgrades
+  systemd:
+    name: unattended-upgrades
+    state: restarted
+  become: true
+
+
+- name: Reboot the server
+  ansible.builtin.reboot:
+    msg: "Reboot after basic setup"

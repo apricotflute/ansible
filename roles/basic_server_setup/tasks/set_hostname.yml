@@ -1,0 +1,21 @@
+---
+- name: Set hostname if its defined
+  block:
+  
+    - name: set hostname to "{{ server_hostname }}"
+      ansible.builtin.hostname:
+        name: "{{ server_hostname }}"
+
+
+    - name: setup /etc/hosts
+      ansible.builtin.template:
+        src: ./templates/hosts.j2
+        dest: /etc/hosts
+        owner: root
+        group: root
+        mode: '0644'
+      register: host_name_changes
+
+    
+
+  when: server_hostname is defined

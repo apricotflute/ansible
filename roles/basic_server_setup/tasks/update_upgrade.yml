@@ -1,0 +1,21 @@
+---
+# update and upgrade debian, redhat or bsd servers  
+- name: update packages with apt
+  ansible.builtin.apt:
+    update_cache: yes
+    upgrade: full
+    autoclean: yes
+    autoremove: yes
+  when: ansible_facts['os_family'] == 'Debian'
+
+- name: Upgrade packages on RedHat/CentOS 8+
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+  when: ansible_facts['os_family'] == 'RedHat' and ansible_facts['distribution_major_version'] | int >= 8
+
+- name: Upgrade packages on BSD
+  ansible.builtin.pkgng:
+    name: '*'
+    state: latest
+  when: ansible_facts['os_family'] == 'FreeBSD'

@@ -1,0 +1,12 @@
+---
+- name: setup passwordless sudo if passwordless_sudo=true
+  block:
+ 
+  - name: Set up passwordless sudo for specified group
+    lineinfile:
+      path: "{{ sudoers_path }}"
+      state: present
+      regexp: "^%{{ target_ansible_passwordless_sudo_group }} ALL="
+      line: "%{{ target_ansible_passwordless_sudo_group }} ALL=(ALL) NOPASSWD: ALL"
+      validate: "/usr/sbin/visudo -cf %s"
+  when: passwordless_sudo == true 

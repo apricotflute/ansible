@@ -1,0 +1,20 @@
+---
+# Install list of basic packages
+- name: Install packages on Debian/Ubuntu
+  ansible.builtin.package:
+    name: "{{ debian_packages }}"
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Install packages on RedHat/CentOS
+  ansible.builtin.package:
+    name: "{{ redhat_packages }}"
+    state: present
+  when: ansible_facts['os_family'] == "RedHat"
+
+- name: Install packages on FreeBSD
+  ansible.builtin.package:
+    name: "{{ freebsd_packages }}"
+    state: present
+  when: ansible_facts['os_family'] == "FreeBSD"
+

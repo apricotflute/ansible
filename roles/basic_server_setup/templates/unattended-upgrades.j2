@@ -1,0 +1,14 @@
+// Unattended-Upgrade::Origins-Pattern controls which packages are upgraded.
+Unattended-Upgrade::Origins-Pattern {
+{% for origin in unattended_upgrade_origins %}
+        "{{ origin }}";
+{% endfor %}
+};
+
+// Sets up logging
+Unattended-Upgrade::SyslogEnable "{{ unattended_enable_logging }}";
+Unattended-Upgrade::SyslogFacility "daemon";
+
+// Automatic reboot settings
+Unattended-Upgrade::Automatic-Reboot "{{ unattended_auto_reboot }}";
+Unattended-Upgrade::Automatic-Reboot-Time "{{ unattended_auto_reboot_time }}";
