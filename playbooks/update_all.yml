@@ -1,0 +1,70 @@
+---
+- name: Update and upgrade all packages
+  hosts: all
+  become: true
+  gather_facts: yes
+  handlers:
+    - name: Add host to reboot list
+      ansible.builtin.set_fact:
+        hosts_needing_reboot: "{{ hosts_needing_reboot | default([]) + [inventory_hostname] }}"
+      listen: "reboot_needed"
+
+
+    - name: Reboot host auto reboot is enabled for the host
+      ansible.builtin.reboot:
+        msg: "Reboot initiated by Ansible due to package upgrades"
+      when: inventory_hostname in hosts_needing_reboot and auto_reboot | default(false) | bool
+      listen: "execute_reboot"
+
+
+
+  tasks:
+    - name: Initialize an empty list for hosts needing reboot
+      set_fact:
+        hosts_needing_reboot: []
+
+    - block:
+        - name: update packages with apt
+          ansible.builtin.apt:
+            update_cache: yes
+            upgrade: full
+            autoclean: yes
+            autoremove: yes
+          register: apt_upgrade
+
+        - name: Check for the presence of /var/run/reboot-required
+          ansible.builtin.stat:
+            path: /var/run/reboot-required
+          register: reboot_needed
+
+      when: ansible_facts['os_family'] == 'Debian'
+
+    
+    - block:
+        - name: Upgrade packages on RedHat/CentOS 8+
+          ansible.builtin.dnf:
+            name: '*'
+            state: latest
+          register: dnf_upgrade
+          notify: "reboot_needed"
+
+      when: ansible_facts['os_family'] == 'RedHat'
+
+
+    - block:
+        - name: Upgrade packages on BSD
+          ansible.builtin.pkgng:
+            name: '*'
+            state: latest
+          register: pkgng_upgrade
+          notify: "reboot_needed"
+
+      when: ansible_facts['os_family'] == 'FreeBSD'
+
+  post_tasks:
+    - name: Send Telegram notification with hosts needing reboot
+      include_role:
+        name: send_telegram_notification
+      vars:
+        telegram_notification_text: "The following hosts may need a reboot after updates: {{ hosts_needing_reboot | join(', ') }}"
+      when: hosts_needing_reboot | default([]) | length > 0

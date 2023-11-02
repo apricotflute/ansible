@@ -1,38 +1,34 @@
-Role Name
-=========
+# Ansible Role: send_telegram_notification
 
-A brief description of the role goes here.
+This Ansible role sends a notification message to a specified Telegram chat using the Telegram Bot API. It is designed to be simple and easy to use, allowing users to quickly integrate Telegram notifications into their Ansible workflows.
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- A Telegram bot token. You can create a bot and obtain a token by talking to the [BotFather](https://core.telegram.org/bots#6-botfather).
+- The chat ID of the user or group to which you want to send the notification.
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+The following variables are required for the role to function properly:
 
-Dependencies
-------------
+- `telegram_token`: The token of your Telegram bot.
+- `chat_id`: The chat ID of the user or group where the notification will be sent.
+- `telegram_notification_text`: The text message that will be sent as a notification.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+## Dependencies
 
-Example Playbook
-----------------
+No external dependencies are required for this role.
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+## Example Playbook
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+Here's a basic example of how to use this role in your Ansible playbook:
 
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+```yaml
+- hosts: localhost
+  gather_facts: no
+  roles:
+    - role: send_telegram_notification
+      vars:
+        telegram_token: "YOUR_TELEGRAM_BOT_TOKEN"
+        chat_id: "YOUR_CHAT_ID"
+        telegram_notification_text: "Hello! This is a test notification from Ansible."
