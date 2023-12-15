@@ -35,7 +35,13 @@
   when: ansible_distribution == "Debian"
 
 - name: Install tailscale with install script if os is not debian
-  block:
+  block: 
+
+    - name: Ensure curl is installed
+      ansible.builtin.package:
+        name: curl
+        state: present
+        
     - name: Run tailscale install script
       ansible.builtin.shell:
         cmd: curl -fsSL https://tailscale.com/install.sh | sh
