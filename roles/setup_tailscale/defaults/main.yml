@@ -1,3 +1,2 @@
 ---
 # defaults file for setup_tailscale
-tailscale_pre_auth_key: "testingkey_______"
