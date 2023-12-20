@@ -1,24 +1,25 @@
 ---
 # tasks file for basic_server_setup
 
-#Mashine config
-- include: ./tasks/ntp_time_sync.yml
-- include: ./tasks/setup_ufw.yml
-- include: ./set_hostname.yml
-
-
 
 
 #Packages setup
-- include: ./update_upgrade.yml
-- include: ./install_basic_packages.yml
-- include: ./tasks/configure_unattended_upgrades.yml
+- ansible.builtin.import_tasks: ./update_upgrade.yml
+- ansible.builtin.import_tasks: ./install_basic_packages.yml
+- ansible.builtin.import_tasks: ./tasks/configure_unattended_upgrades.yml
+
+
+
+#Mashine config
+- ansible.builtin.import_tasks: ./tasks/ntp_time_sync.yml
+- ansible.builtin.import_tasks: ./tasks/setup_ufw.yml
+- ansible.builtin.import_tasks: ./set_hostname.yml
 
 
 
 #User config
-- include: ./create_user.yml
-- include: ./setup_sudo.yml
-- include: ./add_ssh_key.yml
-- include: ./configure_ssh.yml
+- ansible.builtin.import_tasks: ./create_user.yml
+- ansible.builtin.import_tasks: ./setup_sudo.yml
+- ansible.builtin.import_tasks: ./add_ssh_key.yml
+- ansible.builtin.import_tasks: ./configure_ssh.yml
 

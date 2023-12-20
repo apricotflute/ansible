@@ -1,0 +1,4 @@
+// 20auto-upgrades.j2
+APT::Periodic::Update-Package-Lists "{{ update_package_lists }}";
+APT::Periodic::AutocleanInterval "{{ autoclean_interval }}";
+APT::Periodic::Unattended-Upgrade "{{ unattended_upgrade_interval }}";

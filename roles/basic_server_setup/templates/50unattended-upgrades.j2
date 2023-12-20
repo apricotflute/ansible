@@ -6,9 +6,6 @@ Unattended-Upgrade::Origins-Pattern {
 };
 
 // Sets up logging
-Unattended-Upgrade::SyslogEnable "{{ unattended_enable_logging }}";
-Unattended-Upgrade::SyslogFacility "daemon";
-
 // Automatic reboot settings
 Unattended-Upgrade::Automatic-Reboot "{{ unattended_auto_reboot }}";
 Unattended-Upgrade::Automatic-Reboot-Time "{{ unattended_auto_reboot_time }}";

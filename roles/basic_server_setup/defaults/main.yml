@@ -1,5 +1,21 @@
 ---
 # defaults file for basic_server_setup
-target_ansible_user:
-target_ansible_group: 
-target_ansible_user_hashed_password:
+target_ansible_user: ansible_admin
+target_ansible_group: ansible_admins
+update_package_lists: '"*"'
+origin: '"*"'
+sudoers_path:  "/etc/sudoers"
+target_ansible_passwordless_sudo_group: "{{ target_ansible_user }}"
+
+#ssh_config template settings
+ssh_port:  22
+ssh_listen_address: 0.0.0.0
+ssh_permit_root_login: "false"
+ssh_max_auth_tries: "5"
+ssh_pubkey_authentication: "false"
+ssh_password_authentication: "no"
+ssh_x11_forwarding: "false"
+ssh_client_alive_interval: "yes"
+ssh_client_alive_count_max: "3"
+ssh_allow_users:  "{{ target_ansible_user }}"
+ssh_banner_path: "/etc/ssh/banner.txt"

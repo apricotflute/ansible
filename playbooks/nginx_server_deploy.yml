@@ -1,0 +1,74 @@
+---
+- name: Deploy Nginx reverse proxy
+  hosts: nginx
+  become: true
+  gather_facts: yes
+  vars_prompt:
+
+  - name: target_ansible_user_hashed_password
+    prompt: Enter password2
+    private: true
+    encrypt: sha512_crypt
+    confirm: true
+    salt_size: 7
+  
+  - name: tailscale_pre_auth_key
+    prompt: Enter Tailscale pre auth tailscale pre auth key
+    private: true
+    confirm: true
+
+  tasks:
+  
+    - name: Do basic steps to setup the server
+        role: basic_server_setup
+        vars:
+          allowed_services:
+            - sshd
+            - 'Nginx Full' 
+          server_hostname: "42018769.xyz"
+          host.ip: "194.110.247.248"
+          host.name: "42018769.xyz"
+          debian_packages:
+            - vim
+            - htop
+            - curl
+            - wget
+            - curl
+            - sudo 
+            - ufw
+            - nano 
+            - git
+            - ca-certificates
+            - gnupg
+          autoclean_interval: '"7"'
+          unattended_upgrade_interval: '"1"'
+          unattended_auto_reboot: '"true"'
+          unattended_auto_reboot_time: '"04:00"'
+          passwordless_sudo: true
+          ssh_enable_banner: true
+          ssh_banner_txt: "This is a private system. Unauthorized access is prohibited.  /n        All actions are logged for security purposes. "
+    - name: Install Tailscale role
+      role: setup_tailscale
+
+
+    - name: limit ssh to tailscale
+      ansible.builtin.lineinfile:
+        path: "/etc/ssh/sshd_config"
+        regexp: '^ListenAddress'
+        line: 'ListenAddress "{{ tailscale_ipv4 }}"'
+
+
+    - name: install nginx
+      ansible.builtin.apt:
+        name: nginx
+        update_cache: true
+        state: present
+    
+    - name: enable nginx
+      ansible.builtin.systemd_service:
+        name: nginx
+        enabled: true
+        state: started
+
+    - name: remove default site
+        - 
